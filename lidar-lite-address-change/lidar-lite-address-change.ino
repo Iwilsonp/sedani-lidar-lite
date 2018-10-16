@@ -1,4 +1,4 @@
-#include <LIDARLite.h>
+#include "LIDARLite_expanded.h"
 
 /*
 This ia program to test changing the lidar address.
@@ -33,7 +33,9 @@ void setup()
 	digitalWrite(lidar_2_enable, LOW);
 	
 	setup_lidar(lidar_1_address, lidar_1_enable, lidar_1);
+	lidar_1.scanI2CBus();
 	setup_lidar(lidar_2_address, lidar_2_enable, lidar_2);
+	lidar_1.scanI2CBus();
 }
 
 int cal_cnt = 0;
