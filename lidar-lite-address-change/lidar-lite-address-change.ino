@@ -1,83 +1,89 @@
 #include <LIDARLite.h>
 
 /*
-This is the main script.
+This ia program to test changing the lidar address.
 
 library from https://github.com/garmin/LIDARLite_Arduino_Library
-manual from http://static.garmin.com/pumac/LIDAR_Lite_v3_Operation_Manual_and_Technical_Specifications.pdf
+manual from https://static.garmin.com/pumac/LIDAR_Lite_v3_Operation_Manual_and_Technical_Specifications.pdf
 */
 static const char lidar_1_enable = 0;
 static const char lidar_2_enable = 1;
-static const char lidar_3_enable = 2;
-static const char lidar_4_enable = 3;
-static const char lidar_5_enable = 4;
+
+static const char lidar_default_address = 0x62;
 
 static const char lidar_1_address = 0x40;
 static const char lidar_2_address = 0x42;
-static const char lidar_3_address = 0x44;
-static const char lidar_4_address = 0x46;
-static const char lidar_5_address = 0x48;
 
 LIDARLite lidar_1;
 LIDARLite lidar_2;
-LIDARLite lidar_3;
-LIDARLite lidar_4;
-LIDARLite lidar_5;
 
-
+void change_address(char address, &LIDARLite lidar);
+void setup_lidar(char new_address, char lidar_enable, &LIDARLite LIDAR);
 
 void setup()
 {
-    Serial.begin(9600); // Initialize serial connection to display distance readings
+    Serial.begin(115200); // Initialize serial connection to display distance readings
+	pinMode(LED_BUILTIN, OUTPUT);
 	
 	//initialize ALL the lidar enable pins and disable all the lidars
 	pinMode(lidar_1_enable, OUTPUT);
 	pinMode(lidar_2_enable, OUTPUT);
-	pinMode(lidar_3_enable, OUTPUT);
-	pinMode(lidar_4_enable, OUTPUT);
-	pinMode(lidar_5_enable, OUTPUT);
+	
 	digitalWrite(lidar_1_enable, LOW);
 	digitalWrite(lidar_2_enable, LOW);
-	digitalWrite(lidar_3_enable, LOW);
-	digitalWrite(lidar_4_enable, LOW);
-	digitalWrite(lidar_5_enable, LOW);
 	
-	//enable lidar 1
-	digitalWrite(lidar_1_enable, HIGH);
-	lidar_1.begin(0, true); // Set configuration to default and I2C to 400 kHz
-	lidar_1.configure(0, );
+	setup_lidar(lidar_1_address, lidar_1_enable, lidar_1)
 	
 	lidar_2.begin(0, true);
-	lidar_3.begin(0, true);
-	lidar_4.begin(0, true);
-	lidar_5.begin(0, true);
+	
 	
     lidarLite.configure(0); // Change this number to try out alternate configurations
 }
 
 void loop()
 {
-    int dist;
+    int dist_1;
+	int dist_2;
   
     // At the beginning of every 100 readings,
     // take a measurement with receiver bias correction
     if ( cal_cnt == 0 ) {
-        dist = lidarLite.distance();      // With bias correction
+        dist_1 = lidarLite.distance();      // With bias correction
+		dist_2 = lidarLite.distance();
     } else {
-        dist = lidarLite.distance(false); // Without bias correction
-    }
+        dist_1 = lidarLite.distance(false); // Without bias correction
+    }   dist_2 = lidarLite.distance(false);
   
     // Increment reading counter
     cal_cnt++;
     cal_cnt = cal_cnt % 100;
   
     // Display distance
-    Serial.print(dist);
+	Serial.print("Lidar 1: ");
+    Serial.print(dist_1);
+	Serial.print(" cm. Lidar 2: ");
+	Serial.print(dist_2);
     Serial.println(" cm");
   
     delay(10);
 }
 
+void setup_lidar(char new_address, char lidar_enable, &LIDARLite LIDAR){
+	digitalWrite(lidar_enable, HIGH);
+	delay(30); //let LIDARlite turn on
+	LIDAR.begin(0, true);  // Set configuration to default and I2C to 400 kHz
+	LIDAR.configure(0, new_address);
+	change_address(char address, LIDAR);
+}
+
+
+//changes LIDARlite address following procedure outlined in manual pg 5
 void change_address(char address, &LIDARLite lidar){
-	byte[] serial_number = {0,0}
-	lidar.read(0x96, 2, serial_number, 
+	byte[] serial_number = {0,0};
+	lidar.read(0x96, 2, serial_number, FALSE);
+	lidar.write(0x18, serial_number[0]);
+	lidar.write(0x19, serial_number[1]);
+	lidar.write(0x1a, address);
+	lidar.write(0x1e, 0x08);
+}
+	
