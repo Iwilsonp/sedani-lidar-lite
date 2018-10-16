@@ -17,8 +17,8 @@ static const char lidar_2_address = 0x42;
 LIDARLite lidar_1;
 LIDARLite lidar_2;
 
-void change_address(char address, &LIDARLite lidar);
-void setup_lidar(char new_address, char lidar_enable, &LIDARLite LIDAR);
+void change_address(char address, LIDARLite lidar);
+void setup_lidar(char new_address, char lidar_enable, LIDARLite LIDAR);
 
 void setup()
 {
@@ -32,12 +32,8 @@ void setup()
 	digitalWrite(lidar_1_enable, LOW);
 	digitalWrite(lidar_2_enable, LOW);
 	
-	setup_lidar(lidar_1_address, lidar_1_enable, lidar_1)
-	
-	lidar_2.begin(0, true);
-	
-	
-    lidarLite.configure(0); // Change this number to try out alternate configurations
+	setup_lidar(lidar_1_address, lidar_1_enable, lidar_1);
+	setup_lidar(lidar_2_address, lidar_2_enable, lidar_2);
 }
 
 void loop()
@@ -48,11 +44,11 @@ void loop()
     // At the beginning of every 100 readings,
     // take a measurement with receiver bias correction
     if ( cal_cnt == 0 ) {
-        dist_1 = lidarLite.distance();      // With bias correction
-		dist_2 = lidarLite.distance();
+        dist_1 = lidar_1.distance();      // With bias correction
+		dist_2 = lidar_2.distance();
     } else {
-        dist_1 = lidarLite.distance(false); // Without bias correction
-    }   dist_2 = lidarLite.distance(false);
+        dist_1 = lidar_1.distance(false); // Without bias correction
+    }   dist_2 = lidar_2.distance(false);
   
     // Increment reading counter
     cal_cnt++;
@@ -68,7 +64,7 @@ void loop()
     delay(10);
 }
 
-void setup_lidar(char new_address, char lidar_enable, &LIDARLite LIDAR){
+void setup_lidar(char new_address, char lidar_enable, LIDARLite LIDAR){
 	digitalWrite(lidar_enable, HIGH);
 	delay(30); //let LIDARlite turn on
 	LIDAR.begin(0, true);  // Set configuration to default and I2C to 400 kHz
@@ -78,7 +74,7 @@ void setup_lidar(char new_address, char lidar_enable, &LIDARLite LIDAR){
 
 
 //changes LIDARlite address following procedure outlined in manual pg 5
-void change_address(char address, &LIDARLite lidar){
+void change_address(char address, LIDARLite lidar){
 	byte[] serial_number = {0,0};
 	lidar.read(0x96, 2, serial_number, FALSE);
 	lidar.write(0x18, serial_number[0]);
