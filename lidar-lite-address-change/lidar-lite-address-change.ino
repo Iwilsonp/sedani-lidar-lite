@@ -36,6 +36,8 @@ void setup()
 	setup_lidar(lidar_2_address, lidar_2_enable, lidar_2);
 }
 
+int cal_cnt = 0;
+
 void loop()
 {
     int dist_1;
@@ -68,15 +70,15 @@ void setup_lidar(char new_address, char lidar_enable, LIDARLite LIDAR){
 	digitalWrite(lidar_enable, HIGH);
 	delay(30); //let LIDARlite turn on
 	LIDAR.begin(0, true);  // Set configuration to default and I2C to 400 kHz
-	LIDAR.configure(0, new_address);
-	change_address(char address, LIDAR);
+	LIDAR.configure(0);
+	change_address(new_address, LIDAR);
 }
 
 
 //changes LIDARlite address following procedure outlined in manual pg 5
 void change_address(char address, LIDARLite lidar){
-	byte[] serial_number = {0,0};
-	lidar.read(0x96, 2, serial_number, FALSE);
+	byte serial_number[2];
+	lidar.read(0x96, 2, serial_number, true, lidar_default_address);
 	lidar.write(0x18, serial_number[0]);
 	lidar.write(0x19, serial_number[1]);
 	lidar.write(0x1a, address);
