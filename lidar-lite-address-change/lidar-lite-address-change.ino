@@ -34,8 +34,10 @@ void setup()
 	
 	setup_lidar(lidar_1_address, lidar_1_enable, lidar_1);
 	lidar_1.scanI2CBus();
+	/*
 	setup_lidar(lidar_2_address, lidar_2_enable, lidar_2);
 	lidar_1.scanI2CBus();
+	*/
 }
 
 int cal_cnt = 0;
@@ -43,16 +45,16 @@ int cal_cnt = 0;
 void loop()
 {
     int dist_1;
-	int dist_2;
+	//int dist_2;
   
     // At the beginning of every 100 readings,
     // take a measurement with receiver bias correction
     if ( cal_cnt == 0 ) {
         dist_1 = lidar_1.distance();      // With bias correction
-		dist_2 = lidar_2.distance();
+		//dist_2 = lidar_2.distance();
     } else {
         dist_1 = lidar_1.distance(false); // Without bias correction
-    }   dist_2 = lidar_2.distance(false);
+    }   //dist_2 = lidar_2.distance(false);
   
     // Increment reading counter
     cal_cnt++;
@@ -61,9 +63,11 @@ void loop()
     // Display distance
 	Serial.print("Lidar 1: ");
     Serial.print(dist_1);
+	/*
 	Serial.print(" cm. Lidar 2: ");
 	Serial.print(dist_2);
     Serial.println(" cm");
+	*/
   
     delay(10);
 }
