@@ -75,7 +75,7 @@ void loop()
     Serial.print(dist);
     Serial.println(" cm");
   
-    delay(10);
+    delay(100);
 }
 
 void change_address(char address, &LIDARLite lidar){

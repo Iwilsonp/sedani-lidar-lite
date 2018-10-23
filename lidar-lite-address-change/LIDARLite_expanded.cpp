@@ -259,7 +259,7 @@ void LIDARLite::read(char myAddress, int numOfBytes, byte arrayToSave[2], bool m
     busyCounter++; // Increment busyCounter for timeout
 
     // Handle timeout condition, exit while loop and goto bailout
-    if(busyCounter > 9999)
+    if(busyCounter > 99)
     {
       goto bailout;
     }
@@ -292,7 +292,7 @@ void LIDARLite::read(char myAddress, int numOfBytes, byte arrayToSave[2], bool m
   }
 
   // bailout reports error over serial
-  if(busyCounter > 9999)
+  if(busyCounter > 99)
   {
     bailout:
       busyCounter = 0;
