@@ -21,7 +21,7 @@ void setup()
   
   Serial.begin(9600);   //Start serial communications
   
-  for(int i=0; i < sizeof(pinArray); i++) // Setup enable pins
+  for(int i=0; i < 8; i++) // Setup enable pins
   {
     pinMode(pinArray[i],OUTPUT);
     digitalWrite(pinArray[i],0);
@@ -33,8 +33,7 @@ void setup()
   int defAddress = 0x62;    //default address
   
   //Sequentially Enable the enable pins to detect active Lidar sensors
-  int len = sizeof(pinArray);
-  for(int i=0; i < len; i++) 
+  for(int i=0; i < 8; i++) 
   {
     digitalWrite(pinArray[i],1); //enable the enable pin
     delay(20);                   //Wait 20ms to enable comms to Lidar unit
@@ -51,12 +50,17 @@ void setup()
      
        //Write address to LIDAR    
     }
+    else
+    {
+      Serial.print("No device found on ");
+      Serial.println(pinArray[i]);
+    }
     
     digitalWrite(pinArray[i],0); //Disable the enable pin
   }
 
   //Enable all lidars
-  for(int i=0; i < sizeof(pinArray); i++)
+  for(int i=0; i < 8; i++)
   {
     digitalWrite(pinArray[i],1);
   }
@@ -71,6 +75,7 @@ void loop()
     //Loop through each Lidar unit and read distance data
     for(int i = 0; i < unitCounter; i++)
     {        
+       //Serial.println(myLidarLite.distance(false, lidarUnits[i].address));
        Serial.println(myLidarLite.distance(false, lidarUnits[i].address));
        delay(1000);
     }
