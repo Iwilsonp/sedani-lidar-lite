@@ -1,4 +1,4 @@
-#include "LIDARLite_expanded.h"
+#include <LIDARLite.h>
 
 /*
 This ia program to test changing the lidar address.
@@ -32,17 +32,10 @@ void setup()
 	
 	//initialize ALL the lidar enable pins and disable all the lidars
 	pinMode(lidar_1_enable, OUTPUT);
-	pinMode(lidar_2_enable, OUTPUT);
 	
 	digitalWrite(lidar_1_enable, LOW);
-	digitalWrite(lidar_2_enable, LOW);
 	
 	setup_lidar(lidar_1_address, lidar_1_enable, lidar_1);
-	lidar_1.scanI2CBus();
-	/*
-	setup_lidar(lidar_2_address, lidar_2_enable, lidar_2);
-	lidar_1.scanI2CBus();
-	*/
 }
 
 int cal_cnt = 0;
@@ -56,11 +49,10 @@ void loop()
     // take a measurement with receiver bias correction
 	Serial.println("Reading");
     if ( cal_cnt == 0 ) {
-        dist_1 = lidar_1.distance(false, lidar_1_address);      // With bias correction
-		//dist_2 = lidar_2.distance();
+        dist_1 = lidar_1.distance(true, lidar_1_address);      // With bias correction
     } else {
         dist_1 = lidar_1.distance(false, lidar_1_address); // Without bias correction
-    }   //dist_2 = lidar_2.distance(false);
+    }
   
     // Increment reading counter
     cal_cnt++;
@@ -68,12 +60,9 @@ void loop()
   
     // Display distance
 	Serial.print("Lidar 1: ");
-    Serial.println(dist_1);
-	/*
-	Serial.print(" cm. Lidar 2: ");
-	Serial.print(dist_2);
-    Serial.println(" cm");
-	*/
+    Serial.print(dist_1);
+	Serial.println(" cm.");
+	
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     delay(200);
 }
@@ -95,7 +84,7 @@ void setup_lidar(char new_address, char lidar_enable, LIDARLite LIDAR){
 void change_address(char address, LIDARLite lidar){
 	byte serial_number[2];
 	Serial.println("Reading Serial number");
-	lidar.read(0x96, 2, serial_number, true, lidar_default_address);
+	lidar.read(0x96, 2, serial_number, false, lidar_default_address);
 	Serial.println("Got Serial number ");
 	lidar.write(0x18, serial_number[0]);
 	Serial.println("Written first byte");
