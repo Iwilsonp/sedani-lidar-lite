@@ -16,7 +16,6 @@ LIDAR lidarUnits[8];      //Array of lidarUnits to store configuration data
 
 
 void change_address(char address, LIDARLite lidar);
-void setup_lidar(char new_address, char lidar_enable, LIDARLite LIDAR);
 
 void setup() 
 {
@@ -48,12 +47,27 @@ void setup()
     if(error == 0)                       //Communications attempt successful
     {
        
-       lidarUnits[i].pin = pinArray[i]; //Set pin number
-       lidarUnits[i].address = defAddress + unitCounter*2;  //Set device address
+       lidarUnits[unitCounter].pin = pinArray[i]; //Set pin number
+       lidarUnits[unitCounter].address = defAddress - unitCounter*2 - 10;  //Set device address
        Serial.print("Device found on pin ");
-       Serial.println(lidarUnits[i].pin);
+       Serial.println(lidarUnits[unitCounter].pin);
        //Write address to LIDAR
-       change_address(lidarUnits[i].address);
+       lidarUnits[unitCounter].myLidarLite.configure(0);
+       lidarUnits[unitCounter].myLidarLite.begin(0,true);
+       change_address(lidarUnits[unitCounter].address, lidarUnits[unitCounter].myLidarLite);
+       //checking address change
+        for(char a=0;a<255;a+=2){
+          Wire.beginTransmission(a);  //Attempt to communicate to device
+          delay(1);
+          int error = Wire.endTransmission();      //Comm error
+          if(error == 0){
+            Serial.print("changed to");
+            Serial.println((int)a);
+            break;
+          }
+        }
+        
+       
        unitCounter += 1;
     }
     else
@@ -72,8 +86,6 @@ void setup()
   }
 
   delay(100);
-  myLidarLite.begin(0, true);
-  myLidarLite.configure(0);
   Serial.print(unitCounter);
   Serial.println(" devices detected and readdressed");
 }
@@ -88,7 +100,7 @@ void loop()
        Serial.print(i);
        Serial.print(" on address ");
        Serial.println(lidarUnits[i].address);
-       Serial.println(myLidarLite.distance(false, lidarUnits[i].address));
+       Serial.println(lidarUnits[i].myLidarLite.distance(false, lidarUnits[i].address));
        delay(1000);
     }
 }
@@ -96,18 +108,18 @@ void loop()
 
 
 //changes LIDARlite address following procedure outlined in manual pg 5
-void change_address(char address){
+void change_address(char address, LIDARLite lidar){
   byte serial_number[2];
   byte lidar_default_address = 0x62;
   Serial.println("Reading Serial number");
-  myLidarLite.read(0x96, 2, serial_number, false, lidar_default_address);
+  lidar.read(0x96, 2, serial_number, false, lidar_default_address);
   Serial.println("Got Serial number ");
-  myLidarLite.write(0x18, serial_number[0]);
+  lidar.write(0x18, serial_number[0]);
   Serial.println("Written first byte");
-  myLidarLite.write(0x19, serial_number[1]);
+  lidar.write(0x19, serial_number[1]);
   Serial.println("Written second byte");
-  myLidarLite.write(0x1a, address);
+  lidar.write(0x1a, address);
   Serial.println("Written address");
-  myLidarLite.write(0x1e, 0x08);
+  lidar.write(0x1e, 0x08);
   Serial.println("Overwritten 0x1e");
 }
