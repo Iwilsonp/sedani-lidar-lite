@@ -20,7 +20,7 @@ void change_address(char address, LIDARLite lidar);
 void setup() 
 {
   Wire.begin();
-  Serial.begin(9600);   //Start serial communications
+  Serial.begin(115200);   //Start serial communications
   while(!Serial){
     delay(1);
   }
@@ -52,8 +52,9 @@ void setup()
        Serial.print("Device found on pin ");
        Serial.println(lidarUnits[unitCounter].pin);
        //Write address to LIDAR
+	   lidarUnits[unitCounter].myLidarLite.begin(0,true);
        lidarUnits[unitCounter].myLidarLite.configure(0);
-       lidarUnits[unitCounter].myLidarLite.begin(0,true);
+       
        change_address(lidarUnits[unitCounter].address, lidarUnits[unitCounter].myLidarLite);
        //checking address change
         for(char a=0;a<255;a+=2){
@@ -76,14 +77,8 @@ void setup()
       Serial.println(pinArray[i]);
     }
     
-    digitalWrite(pinArray[i],0); //Disable the enable pin
   }
 
-  //Enable all lidars
-  for(int i=0; i < 8; i++)
-  {
-    digitalWrite(pinArray[i],1);
-  }
 
   delay(100);
   Serial.print(unitCounter);
