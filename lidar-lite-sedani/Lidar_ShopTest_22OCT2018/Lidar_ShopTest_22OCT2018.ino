@@ -96,7 +96,7 @@ void loop()
        Serial.print(" on address ");
        Serial.println(lidarUnits[i].address);
        Serial.println(lidarUnits[i].myLidarLite.distance(false, lidarUnits[i].address));
-       delay(1000);
+       delay(10);
     }
 }
 
