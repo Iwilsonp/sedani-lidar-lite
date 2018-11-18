@@ -52,7 +52,7 @@ void setup()
             Serial.print("Device found on pin ");
             Serial.println(lidarUnits[unitCounter].pin);
             //Write address to LIDAR
-	        lidarUnits[unitCounter].myLidarLite.begin(0,true);
+            lidarUnits[unitCounter].myLidarLite.begin(0,true);
             lidarUnits[unitCounter].myLidarLite.configure(0);
             
             change_address(lidarUnits[unitCounter].address, lidarUnits[unitCounter].myLidarLite);
@@ -63,8 +63,8 @@ void setup()
                 int error = Wire.endTransmission();     //Comm error
                 if(error == 0){
                     Serial.print("changed to");
-					Serial.println((int)a);
-					break;
+                    Serial.println((int)a);
+                    break;
                     }
                 }
                 
@@ -86,16 +86,16 @@ void setup()
 
 void loop() 
 {
-        //Loop through each Lidar unit and read distance data
-        for(int i = 0; i < unitCounter; i++)
-        {                
-             //Serial.println(myLidarLite.distance(false, lidarUnits[i].address));
-             Serial.print("reading lidar ");
-             Serial.print(i);
-             Serial.print(" on address ");
-             Serial.println(lidarUnits[i].address);
-             Serial.println(lidarUnits[i].myLidarLite.distance(false, lidarUnits[i].address));
-             delay(10);
+    //Loop through each Lidar unit and read distance data
+    for(int i = 0; i < unitCounter; i++)
+    {                
+        //Serial.println(myLidarLite.distance(false, lidarUnits[i].address));
+        Serial.print("reading lidar ");
+        Serial.print(i);
+        Serial.print(" on address ");
+        Serial.println(lidarUnits[i].address);
+        Serial.println(lidarUnits[i].myLidarLite.distance(false, lidarUnits[i].address));
+        delay(10);
         }
 }
 
